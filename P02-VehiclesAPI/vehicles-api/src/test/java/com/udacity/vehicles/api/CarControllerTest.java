@@ -91,12 +91,12 @@ public class CarControllerTest {
      */
     @Test
     public void listCars() throws Exception {
-        /**
-         * TODO: Add a test to check that the `get` method works by calling
-         *   the whole list of vehicles. This should utilize the car from `getCar()`
-         *   below (the vehicle will be the first in the list).
-         */
-
+        Car car = getCar();
+        mvc.perform(get("/cars")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.carList", hasSize(1)))
+                .andExpect(jsonPath("$._embedded.carList[0].condition", is(car.getCondition().toString())));
     }
 
     /**
@@ -105,10 +105,12 @@ public class CarControllerTest {
      */
     @Test
     public void findCar() throws Exception {
-        /**
-         * TODO: Add a test to check that the `get` method works by calling
-         *   a vehicle by ID. This should utilize the car from `getCar()` below.
-         */
+        Car car = getCar();
+        mvc.perform(get("/cars/1")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("condition", is(car.getCondition().toString())));
+
     }
 
     /**
@@ -122,6 +124,10 @@ public class CarControllerTest {
          *   when the `delete` method is called from the Car Controller. This
          *   should utilize the car from `getCar()` below.
          */
+
+        mvc.perform(delete("/cars/1"))
+                .andExpect(status().isNoContent());
+
     }
 
     /**
@@ -144,7 +150,7 @@ public class CarControllerTest {
         details.setProductionYear(2018);
         details.setNumberOfDoors(4);
         car.setDetails(details);
-        car.setCondition(Condition.USED);
+        car.setCondition(Condition.NEW);
         return car;
     }
 }
